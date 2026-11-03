@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scenesmith — a little code, a whole world</title>
+<style>
+:root{color-scheme:dark;--bg:#101212;--panel:#181b1b;--line:#303635;--muted:#8f9c98;--lime:#d5f899}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#edf1ed;font-family:Arial,Helvetica,sans-serif}button,select,textarea{font:inherit}button,select{cursor:pointer}header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px}.brand{display:flex;align-items:center;gap:12px;font-size:23px;font-weight:700;letter-spacing:-1px}.mark{color:var(--lime);font-size:33px}.brand span:last-child{font-weight:400;color:var(--muted);font-size:12px;letter-spacing:1.7px;margin-left:18px;border-left:1px solid var(--line);padding-left:24px}.local{font-size:12px;color:#b9c5bf;display:flex;gap:9px;align-items:center}.dot{width:6px;height:6px;background:var(--lime);border-radius:50%;display:inline-block}main{padding:28px 32px 20px;max-width:1800px;margin:auto}.intro{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:27px}h1{font-size:30px;letter-spacing:-1px;font-weight:500;margin:0 0 9px}.intro p{font-size:13px;color:var(--muted);margin:0}.edition{font:11px monospace;color:var(--muted);letter-spacing:1px}.workspace{display:grid;grid-template-columns:minmax(0,1.43fr) minmax(340px,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:650px;height:calc(100vh - 248px);max-height:1000px}.preview{position:relative;min-width:0;background:#0c1110;display:flex;flex-direction:column}.toolbar{height:61px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px}.label{font-size:10px;color:var(--muted);letter-spacing:1.8px;font-weight:bold}.live{font:10px monospace;letter-spacing:1px;display:flex;gap:7px;align-items:center}#viewport{position:relative;flex:1;min-height:360px;overflow:hidden}canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}.scene-caption{position:absolute;top:24px;left:24px;pointer-events:none}.scene-caption small{font:10px monospace;color:var(--lime);letter-spacing:1.4px}.scene-caption h2{font-size:21px;letter-spacing:-.5px;font-weight:400;margin:9px 0}.scene-caption p{font-size:12px;color:var(--muted);margin:0;max-width:290px;line-height:1.6}.orbit-hint{position:absolute;bottom:20px;left:0;right:0;text-align:center;font:11px monospace;color:#9ba8a1;pointer-events:none}.metrics{height:46px;border-top:1px solid var(--line);display:flex;gap:24px;align-items:center;padding:0 20px;font:10px monospace;color:var(--muted)}.metrics strong{font-weight:400;color:#e1e9e3;margin-right:5px}.editor-panel{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;min-width:0}.preset-field{padding:21px 20px;border-bottom:1px solid var(--line)}.preset-field label{display:block;margin-bottom:10px}select{width:100%;background:#242a27;color:#eff4e9;border:1px solid #40483e;border-radius:5px;padding:12px;font-size:13px;outline-offset:3px}.source-bar{display:flex;align-items:center;justify-content:space-between;padding:17px 20px 11px;color:#a9b4ad;font:11px monospace}.source-bar span:last-child{color:#6f8174;font-size:10px}#code-editor{width:100%;flex:1;min-height:280px;resize:none;border:0;outline:0;background:transparent;color:#c1d4b1;font:12px/1.85 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:6px 20px 24px;tab-size:2;white-space:pre;overflow:auto}#code-editor:focus{box-shadow:inset 2px 0 #d5f89955}.editor-actions{padding:16px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.auto{display:flex;gap:7px;align-items:center;font-size:11px;color:#abb8ae}input{accent-color:var(--lime)}button{border:0;border-radius:5px;padding:11px 18px;background:var(--lime);color:#1f2b19;font-size:12px;font-weight:600}button:hover{background:#e3ffb4}button:focus-visible,select:focus-visible{outline:2px solid white;outline-offset:3px}.key{font:10px monospace;opacity:.5;margin-left:12px}#error-banner{margin:0 20px 16px;padding:12px;border:1px solid #854d42;border-radius:5px;background:#36211e;color:#ffc3b4;font:11px/1.6 monospace;white-space:pre-wrap;max-height:140px;overflow:auto}#error-banner[hidden]{display:none}footer{display:flex;justify-content:space-between;padding-top:19px;font-size:11px;color:#85938b}.tip code{color:#c5d4bd}.footer-tag{font:10px monospace;letter-spacing:.8px}.unavailable{position:absolute;top:45%;left:10%;right:10%;border:1px solid #854d42;padding:22px;background:#241d19;color:#ffd0ba;line-height:1.6;font-size:14px}.unavailable strong{display:block;margin-bottom:8px}@media(max-width:850px){header{padding:0 20px}.brand span:last-child,.edition{display:none}main{padding:23px 16px}.workspace{grid-template-columns:1fr;height:auto;max-height:none}.preview{height:530px}.editor-panel{border-left:0;border-top:1px solid var(--line);height:650px}.intro h1{font-size:26px}footer{gap:15px;line-height:1.7}.local{font-size:10px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="mark">✳</span> scenesmith <span>GENERATIVE PLAYGROUND</span></div><div class="local"><span class="dot"></span> Local by design</div></header>
+<main><div class="intro"><div><h1>A little code. A whole world.</h1><p>Start with a scene. Change a number. See what happens.</p></div><span class="edition">TEN STUDIES IN MOTION / 001—010</span></div>
+<div class="workspace">
+<section class="preview" aria-label="Live scene preview"><div class="toolbar"><span class="label">VIEWPORT</span><span class="live" id="render-state">INITIALIZING</span></div><div id="viewport"><div class="scene-caption"><small id="scene-number">STUDY 01 / 10</small><h2 id="scene-title">Orbital bloom</h2><p id="scene-description">A constellation of points, growing around an invisible center.</p></div><div class="orbit-hint">↔ Drag to orbit · scroll to zoom</div></div><div class="metrics"><span><strong id="obj-count">0</strong> OBJECTS</span><span><strong id="fps-count">—</strong> FPS</span><span id="renderer-label">WEBGL</span></div></section>
+<section class="editor-panel" aria-label="Scene editor"><div class="toolbar"><span class="label">MAKE IT YOURS</span><span class="label">JS</span></div><div class="preset-field"><label class="label" for="preset-select">CHOOSE A STARTING POINT</label><select id="preset-select" aria-label="Preset scene"></select></div><div class="source-bar"><span>scene.js</span><span>EDITABLE SOURCE</span></div><textarea id="code-editor" aria-label="JavaScript scene source" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea><div id="error-banner" role="alert" hidden></div><div class="editor-actions"><label class="auto"><input id="auto-run" type="checkbox" checked> Auto-run edits</label><button id="run-btn">▶ Run scene <span class="key">⌘ ↵</span></button></div></section>
+</div><footer><span class="tip">Try changing a <code>color</code>, a <code>count</code>, or a little bit of <code>Math</code>.</span><span class="footer-tag">NO ACCOUNTS. JUST EXPERIMENTS.</span></footer></main>
+<script src="three.min.js"></script>
+<script>
+(() => {
+'use strict';
+const PRESETS = [
+{ name:'Orbital bloom', description:'A constellation of points, growing around an invisible center.', code:`function build(THREE, scene) {
+  const count = 240;
+  const color = 0xd5f899;
+  const geometry = new THREE.IcosahedronGeometry(0.065, 1);
+  const material = new THREE.MeshBasicMaterial({ color });
+  const dots = [];
+
+  for (let i = 0; i < count; i++) {
+    const dot = new THREE.Mesh(geometry, material);
+    const y = 1 - (i / (count - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const angle = i * 2.39996;
+    dot.position.set(
+      Math.cos(angle) * radius * 2.6,
+      y * 2.6,
+      Math.sin(angle) * radius * 2.6
+    );
+    dots.push(dot);
+    scene.add(dot);
+  }
+
+  return function animate(t) {
+    dots.forEach((dot, i) => {
+      const pulse = 1 + 0.4 * Math.sin(t * 1.3 + i * 0.08);
+      dot.scale.setScalar(pulse);
+    });
+    scene.rotation.y = t * 0.08;
+  };
+}`},
+{ name:'Wave field', description:'An ocean of 625 points. Two waves, one shifting surface.', code:`function build(THREE, scene) {
+  const dots = [];
+  const geometry = new THREE.SphereGeometry(0.045, 8, 6);
+  for (let x = -12; x <= 12; x++) {
+    for (let z = -12; z <= 12; z++) {
+      const material = new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(0.46 + x * 0.004, 0.6, 0.65)
+      });
+      const dot = new THREE.Mesh(geometry, material);
+      dot.position.set(x * 0.25, 0, z * 0.25);
+      dots.push(dot);
+      scene.add(dot);
+    }
+  }
+  return function animate(t) {
+    dots.forEach(dot => {
+      const p = dot.position;
+      p.y = Math.sin(p.x * 1.5 + t) * 0.5
+          + Math.cos(p.z * 1.5 + t * 0.8) * 0.5;
+    });
+  };
+}`},
+{ name:'Helix garden', description:'Three twisting strands trace a slow dance through space.', code:`function build(THREE, scene) {
+  const geometry = new THREE.SphereGeometry(0.08, 10, 8);
+  for (let strand = 0; strand < 3; strand++) {
+    const material = new THREE.MeshBasicMaterial({
+      color: [0xd5f899, 0xa29bfe, 0xf8ad8f][strand]
+    });
+    for (let i = 0; i < 90; i++) {
+      const angle = i * 0.14 + strand * Math.PI * 2 / 3;
+      const bead = new THREE.Mesh(geometry, material);
+      bead.position.set(Math.cos(angle) * 1.3,
+        (i - 45) * 0.06, Math.sin(angle) * 1.3);
+      scene.add(bead);
+    }
+  }
+  return t => { scene.rotation.y = t * 0.3; };
+}`},
+{ name:'Neon knot', description:'A wireframe loop that folds back into itself, endlessly.', code:`function build(THREE, scene) {
+  const geometry = new THREE.TorusKnotGeometry(1.6, 0.45, 160, 16);
+  const knot = new THREE.Mesh(geometry,
+    new THREE.MeshBasicMaterial({ color: 0xbba0ff, wireframe: true }));
+  scene.add(knot);
+  const halo = new THREE.Mesh(
+    new THREE.TorusGeometry(2.7, 0.015, 8, 120),
+    new THREE.MeshBasicMaterial({ color: 0x657c79 })
+  );
+  scene.add(halo);
+  return function animate(t) {
+    knot.rotation.x = t * 0.16;
+    knot.rotation.y = t * 0.23;
+    halo.rotation.y = -t * 0.1;
+  };
+}`},
+{ name:'Gravity rings', description:'Twelve concentric orbits, each keeping its own time.', code:`function build(THREE, scene) {
+  const rings = [];
+  for (let i = 0; i < 12; i++) {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.5 + i * 0.2, 0.018, 8, 100),
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(0.12 + i * 0.024, 0.65, 0.65)
+      })
+    );
+    rings.push(ring);
+    scene.add(ring);
+  }
+  return function animate(t) {
+    rings.forEach((ring, i) => {
+      ring.rotation.x = t * 0.2 + i * 0.18;
+      ring.rotation.y = Math.sin(t * 0.3 + i * 0.3);
+    });
+  };
+}`},
+{ name:'Voxel tide', description:'A tiny architectural landscape, lifted by a passing wave.', code:`function build(THREE, scene) {
+  const blocks = [];
+  const geometry = new THREE.BoxGeometry(0.24, 1, 0.24);
+  for (let x = -8; x <= 8; x++) {
+    for (let z = -8; z <= 8; z++) {
+      const block = new THREE.Mesh(geometry,
+        new THREE.MeshNormalMaterial());
+      block.position.set(x * 0.32, 0, z * 0.32);
+      blocks.push(block);
+      scene.add(block);
+    }
+  }
+  return function animate(t) {
+    blocks.forEach(block => {
+      const p = block.position;
+      block.scale.y = 0.2 + (1 + Math.sin(
+        Math.sqrt(p.x * p.x + p.z * p.z) * 2 - t)) * 0.8;
+      p.y = block.scale.y / 2 - 0.8;
+    });
+  };
+}`},
+{ name:'Spiral galaxy', description:'A thousand stars wind out from a warm, luminous center.', code:`function build(THREE, scene) {
+  const positions = [];
+  const colors = [];
+  for (let i = 0; i < 1200; i++) {
+    const radius = Math.sqrt(i / 1200) * 3.2;
+    const angle = i * 2.39996 + radius * 1.4;
+    positions.push(Math.cos(angle) * radius,
+      Math.sin(i * 13.7) * 0.14, Math.sin(angle) * radius);
+    const color = new THREE.Color().setHSL(0.1 + radius * 0.12, 0.7, 0.7);
+    colors.push(color.r, color.g, color.b);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position',
+    new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color',
+    new THREE.Float32BufferAttribute(colors, 3));
+  scene.add(new THREE.Points(geometry,
+    new THREE.PointsMaterial({ size: 0.045, vertexColors: THREE.VertexColors })));
+  return t => { scene.rotation.y = t * 0.12; };
+}`},
+{ name:'Floating architecture', description:'A cloud of open cubes, suspended between order and drift.', code:`function build(THREE, scene) {
+  const cubes = [];
+  const geometry = new THREE.BoxGeometry(0.45, 0.45, 0.45);
+  for (let i = 0; i < 64; i++) {
+    const cube = new THREE.Mesh(geometry,
+      new THREE.MeshBasicMaterial({
+        color: i % 3 === 0 ? 0xf6bc8d : 0x98c9b5,
+        wireframe: true
+      }));
+    cube.position.set((i % 4 - 1.5) * 1.1,
+      (Math.floor(i / 4) % 4 - 1.5) * 1.1,
+      (Math.floor(i / 16) - 1.5) * 1.1);
+    cubes.push(cube);
+    scene.add(cube);
+  }
+  return function animate(t) {
+    cubes.forEach((cube, i) => {
+      cube.rotation.x = t * 0.2 + i * 0.1;
+      cube.rotation.z = Math.sin(t * 0.4 + i) * 0.4;
+    });
+  };
+}`},
+{ name:'Solar choreography', description:'Seven wandering planets, and the paths they leave behind.', code:`function build(THREE, scene) {
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(0.4, 24, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffd57c }));
+  scene.add(sun);
+  const planets = [];
+  for (let i = 0; i < 7; i++) {
+    const radius = 0.8 + i * 0.35;
+    const orbit = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, 0.008, 6, 100),
+      new THREE.MeshBasicMaterial({ color: 0x3d5145 }));
+    orbit.rotation.x = Math.PI / 2;
+    scene.add(orbit);
+    const planet = new THREE.Mesh(new THREE.SphereGeometry(0.07 + i * 0.01, 16, 12),
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(i / 9, 0.5, 0.65)
+      }));
+    planets.push({ planet, radius });
+    scene.add(planet);
+  }
+  return function animate(t) {
+    planets.forEach(({ planet, radius }, i) => {
+      const angle = t / (radius * 1.8) + i;
+      planet.position.set(Math.cos(angle) * radius, 0,
+        Math.sin(angle) * radius);
+    });
+  };
+}`},
+{ name:'Breathing crystal', description:'Nested geometric shells expand and contract in counterpoint.', code:`function build(THREE, scene) {
+  const shells = [];
+  for (let i = 0; i < 8; i++) {
+    const shell = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(0.5 + i * 0.3, 1),
+      new THREE.MeshBasicMaterial({
+        color: i % 2 ? 0x91d5e8 : 0xd5f899,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.5
+      }));
+    scene.add(shell);
+    shells.push(shell);
+  }
+  return function animate(t) {
+    shells.forEach((shell, i) => {
+      shell.rotation.y = t * (i % 2 ? 0.1 : -0.1);
+      shell.rotation.z = i * 0.1;
+      shell.scale.setScalar(1 + Math.sin(t + i * 0.6) * 0.12);
+    });
+  };
+}`}
+];
+const $ = id => document.getElementById(id);
+const editor = $('code-editor');
+const picker = $('preset-select');
+const banner = $('error-banner');
+let activeScene, animateScene, renderer, camera;
+let timer, drag = null, orbitAngle = 0.45, elevation = 0.3, distance = 8.5;
+let previousTime = 0, lastInteraction = 0, frameCount = 0, fpsStart = 0;
+let animationFailed = false;
+function reportError(error) {
+  banner.textContent = 'Could not run scene: ' + error.message;
+  banner.hidden = false;
+  $('render-state').textContent = activeScene ? 'PREVIOUS SCENE RETAINED' : 'PREVIEW UNAVAILABLE';
+}
+function releaseScene(target) {
+  if (!target) return;
+  const geometries = new Set(), materials = new Set();
+  target.traverse(object => {
+    if (object.geometry) geometries.add(object.geometry);
+    if (object.material) {
+      (Array.isArray(object.material) ? object.material : [object.material]).forEach(m => materials.add(m));
+    }
+  });
+  geometries.forEach(g => g.dispose());
+  materials.forEach(m => m.dispose());
+}
+function runScene() {
+  clearTimeout(timer);
+  if (!window.THREE || !renderer) {
+    reportError(new Error('The local Three.js renderer is unavailable. Reload the page with WebGL enabled.'));
+    return;
+  }
+  let candidate;
+  try {
+    candidate = new THREE.Scene();
+    candidate.background = new THREE.Color(0x0c1110);
+    const nextAnimation = new Function('THREE', 'scene', editor.value + '\nreturn build(THREE, scene);')(THREE, candidate);
+    if (typeof nextAnimation !== 'function') throw new Error('build(THREE, scene) must return an animate(t) function.');
+    nextAnimation(0);
+    renderer.render(candidate, camera);
+    const oldScene = activeScene;
+    activeScene = candidate;
+    animateScene = nextAnimation;
+    animationFailed = false;
+    window.scene = activeScene;
+    releaseScene(oldScene);
+    $('obj-count').textContent = activeScene.children.length;
+    banner.hidden = true;
+    banner.textContent = '';
+    $('render-state').textContent = '● LIVE';
+  } catch (error) {
+    if (candidate !== activeScene) releaseScene(candidate);
+    reportError(error);
+  }
+}
+function selectPreset() {
+  const preset = PRESETS[Number(picker.value)];
+  editor.value = preset.code;
+  $('scene-title').textContent = preset.name;
+  $('scene-description').textContent = preset.description;
+  $('scene-number').textContent = 'STUDY ' + String(Number(picker.value) + 1).padStart(2, '0') + ' / 10';
+  runScene();
+}
+PRESETS.forEach((preset, i) => {
+  const option = document.createElement('option');
+  option.value = i;
+  option.textContent = String(i + 1).padStart(2, '0') + ' / ' + preset.name;
+  picker.appendChild(option);
+});
+picker.value = '0';
+editor.value = PRESETS[0].code;
+window.PRESETS = PRESETS;
+picker.addEventListener('change', selectPreset);
+$('run-btn').addEventListener('click', runScene);
+editor.addEventListener('input', () => {
+  clearTimeout(timer);
+  if ($('auto-run').checked) timer = setTimeout(runScene, 400);
+});
+$('auto-run').addEventListener('change', () => {
+  clearTimeout(timer);
+  if ($('auto-run').checked) runScene();
+});
+editor.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); runScene(); }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    editor.setRangeText('  ', editor.selectionStart, editor.selectionEnd, 'end');
+    editor.dispatchEvent(new Event('input'));
+  }
+});
+function updateCamera() {
+  camera.position.set(Math.sin(orbitAngle) * Math.cos(elevation) * distance,
+    Math.sin(elevation) * distance, Math.cos(orbitAngle) * Math.cos(elevation) * distance);
+  camera.lookAt(0, 0, 0);
+}
+try {
+  if (!window.THREE) throw new Error('The local three.min.js library could not load. Keep it beside index.html.');
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  updateCamera();
+  const viewport = $('viewport');
+  viewport.prepend(renderer.domElement);
+  function resizeScene() {
+    const width = viewport.clientWidth, height = viewport.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resizeScene);
+  resizeScene();
+  renderer.domElement.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    drag = { x: e.clientX, y: e.clientY };
+    lastInteraction = performance.now();
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    orbitAngle -= (e.clientX - drag.x) * 0.006;
+    elevation = Math.max(-1.3, Math.min(1.3, elevation + (e.clientY - drag.y) * 0.006));
+    drag = { x: e.clientX, y: e.clientY };
+    lastInteraction = performance.now();
+  });
+  window.addEventListener('mouseup', () => { drag = null; });
+  window.addEventListener('blur', () => { drag = null; });
+  renderer.domElement.addEventListener('wheel', e => {
+    e.preventDefault();
+    distance = Math.max(4, Math.min(16, distance + e.deltaY * 0.008));
+    lastInteraction = performance.now();
+  }, { passive: false });
+  selectPreset();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const delta = Math.min((now - previousTime) / 1000, 0.05);
+    previousTime = now;
+    if (!drag && now - lastInteraction > 1800) orbitAngle += delta * 0.06;
+    updateCamera();
+    if (activeScene && !animationFailed) {
+      try {
+        animateScene(now / 1000);
+        renderer.render(activeScene, camera);
+      } catch (error) {
+        animationFailed = true;
+        reportError(error);
+        $('render-state').textContent = 'ANIMATION PAUSED';
+      }
+    }
+    frameCount++;
+    if (now - fpsStart > 1000) {
+      $('fps-count').textContent = Math.round(frameCount * 1000 / (now - fpsStart));
+      fpsStart = now;
+      frameCount = 0;
+    }
+  }
+  requestAnimationFrame(frame);
+} catch (error) {
+  reportError(error);
+  const notice = document.createElement('div');
+  notice.className = 'unavailable';
+  const heading = document.createElement('strong');
+  heading.textContent = 'The preview could not start.';
+  notice.appendChild(heading);
+  notice.appendChild(document.createTextNode(error.message));
+  $('viewport').appendChild(notice);
+  $('renderer-label').textContent = 'RENDERER UNAVAILABLE';
+}
+})();
+</script>
+</body>
+</html>
